@@ -129,8 +129,14 @@ class MethodExtractor implements ExtractorInterface {
         //
         // Object creation
         $extractor = new CallExtractor($this->searcher);
+        if ($method->getTokens() instanceof TokenCollection) {
+            $tokens = $method->getTokens();
+            $n = 0;
+        }
+
         $start = $n;
         $len = sizeof($tokens, COUNT_NORMAL);
+
         for($i = $start; $i < $len; $i++) {
             $token = $tokens[$i];
             switch($token->getType()) {
