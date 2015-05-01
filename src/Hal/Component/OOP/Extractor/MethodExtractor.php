@@ -65,6 +65,7 @@ class MethodExtractor implements ExtractorInterface {
 
             if(sizeof($elems, COUNT_NORMAL) == 1) {
                 list($name, $type) = array_pad($elems, 2, null);
+                $isRequired = true;
             } else {
                 if('$' == $elems[0][0]) {
                     $name = $elems[0];
