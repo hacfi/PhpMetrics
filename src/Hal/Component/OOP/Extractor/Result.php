@@ -10,6 +10,7 @@
 namespace Hal\Component\OOP\Extractor;
 use Hal\Component\OOP\Reflected\ReflectedClass;
 use Hal\Component\OOP\Reflected\ReflectedInterface;
+use Hal\Component\OOP\Reflected\ReflectedTrait;
 use Hal\Component\Result\ExportableInterface;
 
 
@@ -40,6 +41,7 @@ class Result implements ExportableInterface {
             , 'noca' => sizeof($this->getAbstractClasses(), COUNT_NORMAL)
             , 'nocc' => sizeof($this->getConcreteClasses(), COUNT_NORMAL)
             , 'noi' => sizeof($this->getInterfaces(), COUNT_NORMAL)
+            , 'not' => sizeof($this->getTraits(), COUNT_NORMAL)
             , 'nom' => $nom
         );
     }
@@ -79,7 +81,7 @@ class Result implements ExportableInterface {
     }
 
     /**
-     * Get abstract classes
+     * Get interfaces
      *
      * @return array
      */
@@ -94,6 +96,21 @@ class Result implements ExportableInterface {
     }
 
     /**
+     * Get traits
+     *
+     * @return array
+     */
+    public function getTraits() {
+        $result = array();
+        foreach($this->getClasses() as $class) {
+            if($class instanceof ReflectedTrait) {
+                array_push($result, $class);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get concretes classes
      *
      * @return array
@@ -101,7 +118,7 @@ class Result implements ExportableInterface {
     public function getConcreteClasses() {
         $result = array();
         foreach($this->getClasses() as $class) {
-            if(!$class->isAbstract() &&!$class instanceof ReflectedInterface) {
+            if(!$class->isAbstract() &&!$class instanceof ReflectedInterface &&!$class instanceof ReflectedTrait) {
                 array_push($result, $class);
             }
         }

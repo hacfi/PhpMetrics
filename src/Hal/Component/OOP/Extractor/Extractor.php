@@ -52,10 +52,15 @@ class Extractor {
         $this->extractors = (object) array(
             'class' => new ClassExtractor($this->searcher)
             , 'interface' => new InterfaceExtractor($this->searcher)
+            , 'trait' => new TraitExtractor($this->searcher)
             , 'alias' => new AliasExtractor($this->searcher)
             , 'method' => new MethodExtractor($this->searcher)
             , 'call' => new CallExtractor($this->searcher)
         );
+
+        if (!defined('T_TRAIT')) {
+            define('T_TRAIT', 9999);
+        }
     }
 
     /**
@@ -93,10 +98,20 @@ class Extractor {
                 case T_NAMESPACE:
                     $namespace = '\\'.$this->searcher->getFollowingName($n, $tokens);
                     $this->extractors->class->setNamespace($namespace);
+                    $this->extractors->interface->setNamespace($namespace);
+                    $this->extractors->trait->setNamespace($namespace);
                     break;
 
                 case T_INTERFACE:
                     $class = $this->extractors->interface->extract($n, $tokens);
+                    $class->setNameResolver($nameResolver);
+                    // push class AND in global AND in local class map
+                    $this->result->pushClass($class);
+                    $result->pushClass($class);
+                    break;
+
+                case T_TRAIT:
+                    $class = $this->extractors->trait->extract($n, $tokens);
                     $class->setNameResolver($nameResolver);
                     // push class AND in global AND in local class map
                     $this->result->pushClass($class);
